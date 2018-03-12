@@ -15,7 +15,7 @@ AppExpress.get('/', (req,res) => {
 
 AppExpress.use(cors({ origin: '*' }));
 
-app.set('port', (process.env.PORT || 5000));
+AppExpress.set('port', (process.env.PORT || 5000));
 
 const PORT = 3001;
 
@@ -26,7 +26,7 @@ MongoClient.connect(db.url, (err, database) => {
 if (err) return console.log(err)
 	routing(AppExpress, database);
 	AppExpress.listen(app.get('port'), () => {
-		console.log(`Server listening on:`, app.get('port'));
+		console.log(`Server listening on:`, AppExpress.get('port'));
 	});             
 })
 
