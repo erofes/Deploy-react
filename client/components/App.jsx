@@ -15,15 +15,6 @@ import Button from 'react-validation/build/button';
 
 import qs from 'qs';
 
-const apiPrefix = {
-    "apiPrefix": "http://127.0.0.1:3001",
-    "serverPort": "3001",
-    "db":{
-        "name": "notes",
-        "host": "127.0.0.1",
-        "port": 27017
-    }
-};
 
 const required = (value) => {
     if (!value.toString().trim().length) {
@@ -32,7 +23,7 @@ const required = (value) => {
 };
 
 class App extends React.Component {
-	constructor(props) {
+    constructor(props) {
         super(props);
         this.state = {value: '', list: '', fromMongo: '', got: [], title: '', status: '', priority: '', date: '', projects: [], items: []};
 
@@ -43,25 +34,29 @@ class App extends React.Component {
         this.handleChangeDate = this.handleChangeDate.bind(this);
         this.fun = this.fun.bind(this);
         this.todos = this.todos.bind(this);
-        this.listNotes = this.listNotes.bind(this);
+        //this.listNotes = this.listNotes.bind(this);
         this.listAllNotes = this.listAllNotes.bind(this);
         this.listAllWorks = this.listAllWorks.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleImportProjects = this.handleImportProjects.bind(this);
         this.handleClickProject = this.handleClickProject.bind(this);
-        this.addNewTODO = this.addNewTODO.bind(this)
+        this.addNewTODO = this.addNewTODO.bind(this);
 
-		this.store = createStore(this.todos);
-		this.store.subscribe(() => {
-			console.log('subscribe', this.store.getState());
+        this.apiPrefix = `https://stormy-basin-40532.herokuapp.com`;
+        this.apiPrefixWork = `https://stormy-basin-40532.herokuapp.com/work/`;
+        this.apiPrefixNotes = `https://stormy-basin-40532.herokuapp.com/notes/`;
 
-			this.list = this.store.getState().map((item, index) => 
-				<li key={index}>{item}</li>
-			);
+        this.store = createStore(this.todos);
+        this.store.subscribe(() => {
+            console.log('subscribe', this.store.getState());
 
-        	this.setState({list: this.list});
-        	console.log(this.list);
-		});
+            this.list = this.store.getState().map((item, index) => 
+                <li key={index}>{item}</li>
+            );
+
+            this.setState({list: this.list});
+            console.log(this.list);
+        });
     }
 
     handleSubmit(event) {
@@ -75,7 +70,7 @@ class App extends React.Component {
         })
 
         //console.log('Note: '+ newNote)
-        axios.post(`http://localhost:3001/work/`, newNote).then(({data}) =>
+        axios.post(this.apiPrefixWork, newNote).then(({data}) =>
             console.log(data)
         ).catch(err =>
             console.error(err)
@@ -91,7 +86,7 @@ class App extends React.Component {
         })
 
         //console.log('Note: '+ newNote)
-        axios.post(`http://localhost:3001/work/`, newNote).then(({data}) =>
+        axios.post(this.apiPrefixWork, newNote).then(({data}) =>
             console.log(data)
         ).catch(err =>
             console.error(err)
@@ -146,8 +141,9 @@ class App extends React.Component {
         //console.log(this.state.items);
     }
 
+    /*
     listNotes() {
-        axios.get(`http://localhost:3001/notes/5a97fa812eeaf906989a7da2`).then(({ data }) => {
+        axios.get(apiPrefix+'/notes/5a97fa812eeaf906989a7da2').then(({ data }) => {
             //console.log( data )
             this.setState({fromMongo: data.text})
         })
@@ -155,9 +151,10 @@ class App extends React.Component {
             alert( err )
         );
     }
+    */
 
     listAllNotes() {
-        axios.get(`http://localhost:3001/notes`).then(({ data }) => {
+        axios.get(this.apiPrefixNotes).then(({ data }) => {
             data.map((item) => {
                 this.setState({got: [...this.state.got, item]});
                 //this.setState({allFromMongo: [this.state.allFromMongo, [item.text, item._id, item.title] ]})
@@ -171,7 +168,7 @@ class App extends React.Component {
     }
 
     listAllWorks() {
-        axios.get(`http://localhost:3001/work`).then(({ data }) => {
+        axios.get(this.apiPrefixWork).then(({ data }) => {
             this.setState({got: []})
             data.map((item) => {
                 this.setState({got: [...this.state.got, item]});
@@ -185,15 +182,15 @@ class App extends React.Component {
         );
     }
 
-	todos(state = [], action) {
-		if (action.type === 'ADD_TODO') {
-			return [
-				...state,
-				action.payload
-			];
-		}
-		return state;
-	}
+    todos(state = [], action) {
+        if (action.type === 'ADD_TODO') {
+            return [
+                ...state,
+                action.payload
+            ];
+        }
+        return state;
+    }
 
     handleChange(event) {
         this.setState({value: event.target.value});
@@ -226,11 +223,11 @@ class App extends React.Component {
         this.store.dispatch({ type: 'ADD_TODO', payload: todoName });
     }
 
-	render() {
+    render() {
         return <div className="dispatcher"> <HomeMenu>        
         </HomeMenu><br></br>
-		<button className="addMyTodo" onClick={this.fun}>AddListener</button>
-		<input className="inputMyTodo" value={this.state.value} onChange={this.handleChange}></input>
+        <button className="addMyTodo" onClick={this.fun}>AddListener</button>
+        <input className="inputMyTodo" value={this.state.value} onChange={this.handleChange}></input>
         {this.state.list}
         <button className="kid" onClick={this.listNotes}>ListAlert</button>
         <div>Got from mongo:
