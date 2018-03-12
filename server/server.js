@@ -17,8 +17,6 @@ AppExpress.use(cors({ origin: '*' }));
 
 AppExpress.set('port', (process.env.PORT || 5000));
 
-const PORT = 3001;
-
 AppExpress.use(bodyParser.urlencoded({ extended: true }));
 
 

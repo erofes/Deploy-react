@@ -5,6 +5,10 @@ module.exports = {
 		path: __dirname,
 		filename: 'bundle.js'
 	},
+	devServer: {
+	    inline:true,
+	    port: (process.env.PORT || 5000)
+  	},
 	mode: "development",
 	module: {
 		rules: [
