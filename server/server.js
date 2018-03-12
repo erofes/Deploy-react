@@ -25,7 +25,7 @@ AppExpress.use(bodyParser.urlencoded({ extended: true }));
 MongoClient.connect(db.url, (err, database) => {
 if (err) return console.log(err)
 	routing(AppExpress, database);
-	AppExpress.listen(app.get('port'), () => {
+	AppExpress.listen(AppExpress.get('port'), () => {
 		console.log(`Server listening on:`, AppExpress.get('port'));
 	});             
 })
