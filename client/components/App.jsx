@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
 
-//import './App.less';
+import './App.less';
 import HomeMenu from './HomeMenu.jsx';
 import HomeList from './HomeList.jsx';
 
@@ -41,6 +41,7 @@ class App extends React.Component {
         this.handleImportProjects = this.handleImportProjects.bind(this);
         this.handleClickProject = this.handleClickProject.bind(this);
         this.addNewTODO = this.addNewTODO.bind(this);
+        this.handleRemoveElement = this.handleRemoveElement.bind(this);
 
         this.apiPrefix = `https://stormy-basin-40532.herokuapp.com`;
         this.apiPrefixWork = `https://stormy-basin-40532.herokuapp.com/work/`;
@@ -68,11 +69,27 @@ class App extends React.Component {
             status: this.state.status,
             deadline: this.state.date
         })
+        this.setState({title: ''});
+        this.setState({priority: ''});
+        this.setState({status: ''});
+        this.setState({date: ''});
 
         //console.log('Note: '+ newNote)
-        axios.post(this.apiPrefixWork, newNote).then(({data}) =>
-            console.log(data)
-        ).catch(err =>
+        axios.post(this.apiPrefixWork, newNote).then(({data}) => {
+            console.log(data);
+            this.listAllWorks();
+        }).catch(err =>
+            console.error(err)
+        );
+    }
+
+    handleRemoveElement(event) {
+        const idSelectedProject = event.target.attributes.name.textContent;
+
+        axios.delete(this.apiPrefixWork+idSelectedProject).then(({data}) => {
+            console.log(data);
+            this.listAllWorks();
+        }).catch(err =>
             console.error(err)
         );
     }
@@ -86,9 +103,10 @@ class App extends React.Component {
         })
 
         //console.log('Note: '+ newNote)
-        axios.post(this.apiPrefixWork, newNote).then(({data}) =>
-            console.log(data)
-        ).catch(err =>
+        axios.post(this.apiPrefixWork, newNote).then(({data}) => {
+            console.log(data);
+            this.listAllWorks();
+        }).catch(err =>
             console.error(err)
         );
     }
@@ -130,6 +148,7 @@ class App extends React.Component {
                 if (item.project_id == idSelectedProject) {
                     this.setState({items: [...this.state.items, item]});
                     this.addNewTODO(item);
+                    this.listAllWorks();
                 }
             })
         }).catch(err =>
@@ -224,27 +243,50 @@ class App extends React.Component {
     }
 
     render() {
-        return <div className="dispatcher"> <HomeMenu>        
-        </HomeMenu><br></br>
-        <button className="addMyTodo" onClick={this.fun}>AddListener</button>
-        <input className="inputMyTodo" value={this.state.value} onChange={this.handleChange}></input>
-        {this.state.list}
-        <button className="kid" onClick={this.listNotes}>ListAlert</button>
-        <div>Got from mongo:
-        {this.state.fromMongo}
-        </div>
+        return <div>
         <div>
-        <button className="import_btn" onClick={this.handleImportProjects}>IMPORT PROJECTS</button>
+        <button className="import_btn" onClick={this.handleImportProjects}>IMPORT PROJECTS from TODOIST</button>
             <div>
-            Got all projects from todoist:
-            {this.state.projects.map((item, index) => <li name={item.id} onClick={this.handleClickProject} key={index}>{item.name}</li>)}
-            Responsed items:
-            {this.state.items.map((item, index) => <li key={index}>{item.content}</li>)}
+            {
+                    this.state.projects.lenght == undefined
+                    ?
+                            null
+                        :
+                            <p>Projects from Todoist:</p>
+            }
+            {this.state.projects.map((item, index) => <li className='Project' name={item.id} onClick={this.handleClickProject} key={index}>{item.name}</li>)}
+            </div>
+            <div>
+            {
+                    this.state.items.lenght == undefined
+                    ?
+                            null
+                        :
+                            <p>Items from selected list which will be added to your actual TODOs list:</p>
+            }
+            {this.state.items.map((item, index) => <li className='Items' key={index}>{item.content}</li>)}
             </div>
         </div>
         <button className="optional" onClick={this.listAllWorks}>ListAllMyToDos</button>
-        <div>Got all from mongo:
-        {this.state.got.map((item, index) => <li key={index}>{item.title} {item.priority} {item.status} {item.deadline}</li>)}
+        <div>
+        {
+                    this.state.got.lenght == undefined
+                    ?
+                            null
+                        :
+                            <p>Got all from mongo:</p>
+        }
+        <table><tbody>
+        <tr><th>Title</th><th>Priority</th><th>Status</th><th>Date</th><th>Delete</th></tr>
+        {this.state.got.map((item, index) => 
+            <tr key={index}>
+                <td>{item.title}</td>
+                <td>{item.priority}</td>
+                <td>{item.status}</td>
+                <td>{item.deadline}</td>
+                <td name={item._id} onClick={this.handleRemoveElement}>x</td>
+            </tr>)}
+        </tbody></table>
         </div>
         <Form>
             <h3>Add todo</h3>

@@ -14,11 +14,7 @@ class App extends React.Component {
     }
 
 	render() {
-        return <Provider store={this.store}>
-        <div className="dispatcher"> 
-        <RduxChild>
-        </RduxChild><br></br>
-        </div></Provider>;
+        return <div>Start Page, welcome!</div>;
     }
 }
 
