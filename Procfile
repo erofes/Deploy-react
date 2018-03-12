@@ -1,1 +1,1 @@
-web: npm run wp-serv2
+web: npm run server
