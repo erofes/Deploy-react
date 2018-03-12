@@ -18,8 +18,8 @@ ReactDOM.render(
 		</ul>
 
 		<hr/>
-			<Route path='/' component={Rdux}/>
-			<Route path='/about' component={App}/>
+			<Route exact path='/' component={Rdux}/>
+			<Route exact path='/about' component={App}/>
 		</div>
 		</Router>,
 
